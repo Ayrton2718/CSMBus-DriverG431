@@ -1,3 +1,9 @@
+/*
+ * cc_timer.h
+ *
+ *  Created on: Oct 27, 2023
+ *      Author: sen
+ */
 #include "cc_timer.h"
 
 static volatile uint32_t g_ms_count;
