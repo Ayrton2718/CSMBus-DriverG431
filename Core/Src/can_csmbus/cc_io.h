@@ -1,38 +1,38 @@
 /*
- * cs_io.h
+ * cc_io.h
  *
  *  Created on: Oct 27, 2023
  *      Author: sen
  */
 
-#ifndef SRC_CAN_SMBUS_CS_IO_H_
-#define SRC_CAN_SMBUS_CS_IO_H_
+#ifndef SRC_CAN_CSMBUS_CC_IO_H
+#define SRC_CAN_CSMBUS_CC_IO_H
 
-#include "cs_type.h"
+#include "cc_type.h"
 #include "fdcan.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define CSIO_HCAN ((&hfdcan1))
+#define CCIO_HCAN ((&hfdcan1))
 
-typedef CSType_bool_t (*CSIo_canCallback_t)(CSReg_t reg, const uint8_t* data, size_t len);
-typedef void (*CSIo_resetCallback_t)(void);
+typedef CCType_bool_t (*CCIo_canCallback_t)(CCReg_t reg, const uint8_t* data, size_t len);
+typedef void (*CCIo_resetCallback_t)(void);
 
 
-void CSIo_init(void);
+void CCIo_init(void);
 
-void CSIo_bind(CSType_appid_t appid, CSIo_canCallback_t callback, CSIo_resetCallback_t reset_callback);
+void CCIo_bind(CCType_appid_t appid, CCIo_canCallback_t callback, CCIo_resetCallback_t reset_callback);
 
-void CSIo_sendUser(CSReg_t reg, const uint8_t* data, uint8_t len);
+void CCIo_sendUser(CCReg_t reg, const uint8_t* data, uint8_t len);
 
-CSType_bool_t CSIo_isSafetyOn(void);
+CCType_bool_t CCIo_isSafetyOn(void);
 
-void CSIo_process(void);
+void CCIo_process(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* SRC_CAN_SMBUS_CS_IO_H_ */
+#endif /* SRC_CAN_CSMBUS_CC_IO_H */

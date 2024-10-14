@@ -24,7 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "can_smbus/can_smbus.hpp"
+#include "can_csmbus/can_csmbus.hpp"
 #include "user_task.h"
 
 /* USER CODE END Includes */
@@ -60,7 +60,7 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  __CSTimer_interrupt(htim);
+  __CCTimer_interrupt(htim);
 }
 /* USER CODE END 0 */
 
@@ -88,7 +88,7 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
   MX_GPIO_Init();
-  CSId_init();
+  CCId_init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -96,9 +96,9 @@ int main(void)
   MX_FDCAN1_Init();
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
-  CSLed_init();
-  CSTimer_init();
-  CSIo_init();
+  CCLed_init();
+  CCTimer_init();
+  CCIo_init();
   UserTask_setup();
   /* USER CODE END 2 */
 
@@ -106,7 +106,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    CSType_bool_t is_safety_on = CSIo_isSafetyOn();
+    CCType_bool_t is_safety_on = CCIo_isSafetyOn();
     if(is_safety_on == 0)
     {
       UserTask_loop();
@@ -114,9 +114,9 @@ int main(void)
       UserTask_unsafeLoop();
     }
 
-    CSLed_process(is_safety_on);
-    CSId_process(is_safety_on);
-    CSIo_process();
+    CCLed_process(is_safety_on);
+    CCId_process(is_safety_on);
+    CCIo_process();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -181,7 +181,7 @@ void SystemClock_Config(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  CSLed_hungUp();
+  CCLed_hungUp();
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)

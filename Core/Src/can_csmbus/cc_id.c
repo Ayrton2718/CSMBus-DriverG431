@@ -1,11 +1,11 @@
 /*
- * cs_id.c
+ * cc_id.c
  *
  *  Created on: Oct 27, 2023
  *      Author: sen
  */
 
-#include "cs_id.h"
+#include "cc_id.h"
 
 #include <string.h>
 #include "main.h"
@@ -24,32 +24,32 @@ typedef struct
 	uint32_t  	check_pattern;
     uint16_t     id;
     uint16_t     checksum;
-}__attribute__((__packed__)) CSId_flash1_t;
+}__attribute__((__packed__)) CCId_flash1_t;
 
 
 // The type must be 16 bit or larger.
 typedef struct
 {
 	uint64_t     flash1;
-}__attribute__((__packed__)) CSId_flashData_t;
+}__attribute__((__packed__)) CCId_flashData_t;
 
 
-static CSId_t g_my_addr;
+static CCId_t g_my_addr;
 static uint32_t g_tenMsTimer;
 static uint16_t g_push_counter;
 
 static uint8_t      g_id;
 static uint16_t     g_idLoopCount;
 
-static void CSId_flashWriteId(CSId_t id);
-static CSId_t CSId_flashReadId(void);
-static CSType_bool_t CSId_isPushingBtn(void);
+static void CCId_flashWriteId(CCId_t id);
+static CCId_t CCId_flashReadId(void);
+static CCType_bool_t CCId_isPushingBtn(void);
 
 
-void CSId_init(void)
+void CCId_init(void)
 {
-    g_my_addr = CSId_flashReadId();
-    if(g_my_addr == CSId_UNKNOWN)
+    g_my_addr = CCId_flashReadId();
+    if(g_my_addr == CCId_UNKNOWN)
     {
         for(uint8_t i = 0; i < 4; i++)
         {
@@ -63,32 +63,32 @@ void CSId_init(void)
             HAL_Delay(200);
         }
 
-        CSId_flashWriteId(CS_ID_FIXED_ADDR);
+        CCId_flashWriteId(CS_ID_FIXED_ADDR);
         NVIC_SystemReset();
     }
 
-    g_id = CSId_convertId2Num(g_my_addr);
+    g_id = CCId_convertId2Num(g_my_addr);
 }
 
-CSId_t CSId_getId(void)
+CCId_t CCId_getId(void)
 {
     return g_my_addr;
 }
 
-void CSId_process(CSType_bool_t is_safety_on)
+void CCId_process(CCType_bool_t is_safety_on)
 {
     register uint32_t now_tick = HAL_GetTick();
     if(g_tenMsTimer < now_tick)
     {
         g_tenMsTimer = now_tick + 10;
 
-        if(is_safety_on && CSId_isPushingBtn())
+        if(is_safety_on && CCId_isPushingBtn())
         {
             g_push_counter++;
             if(300 <= g_push_counter)
             {
                 HAL_GPIO_WritePin(LED_ID_GPIO_Port, LED_ID_Pin, GPIO_PIN_RESET);
-                if(CSId_isPushingBtn() == CSTYPE_FALSE)
+                if(CCId_isPushingBtn() == CCTYPE_FALSE)
                 {
                     uint16_t id_num = 0;
                     uint8_t flg = 0;
@@ -99,7 +99,7 @@ void CSId_process(CSType_bool_t is_safety_on)
                     HAL_GPIO_WritePin(LED_RX_GPIO_Port, LED_RX_Pin, GPIO_PIN_RESET);
                     while(HAL_GetTick() < end_tick)
                     {
-                        if(CSId_isPushingBtn() && flg == 0)
+                        if(CCId_isPushingBtn() && flg == 0)
                         {
                             id_num++;
                             HAL_GPIO_WritePin(LED_ID_GPIO_Port, LED_ID_Pin, GPIO_PIN_SET);
@@ -107,7 +107,7 @@ void CSId_process(CSType_bool_t is_safety_on)
                             end_tick = HAL_GetTick() + 10000;
                         }
 
-                        if((CSId_isPushingBtn() == CSTYPE_FALSE) && flg == 1)
+                        if((CCId_isPushingBtn() == CCTYPE_FALSE) && flg == 1)
                         {
                             HAL_GPIO_WritePin(LED_ID_GPIO_Port, LED_ID_Pin, GPIO_PIN_RESET);
                             flg = 0;
@@ -129,9 +129,9 @@ void CSId_process(CSType_bool_t is_safety_on)
                     HAL_GPIO_WritePin(LED_TX_GPIO_Port, LED_TX_Pin, GPIO_PIN_RESET);
                     HAL_GPIO_WritePin(LED_RX_GPIO_Port, LED_RX_Pin, GPIO_PIN_RESET);
 
-                    if((id_num != 0) && (id_num < CSId_convertId2Num(CSId_UNKNOWN)))
+                    if((id_num != 0) && (id_num < CCId_convertId2Num(CCId_UNKNOWN)))
                     {
-                        CSId_flashWriteId(CSId_convertNum2Id(id_num - 1));
+                        CCId_flashWriteId(CCId_convertNum2Id(id_num - 1));
                         NVIC_SystemReset();
                     }
                 }
@@ -140,7 +140,7 @@ void CSId_process(CSType_bool_t is_safety_on)
             g_push_counter = 0;
         }
 
-        if(g_my_addr != CSId_UNKNOWN)
+        if(g_my_addr != CCId_UNKNOWN)
         {
             if(g_idLoopCount <= (CS_ID_SLEEP_TIM + CS_ID_BLINK_TIM))
             {
@@ -165,22 +165,22 @@ void CSId_process(CSType_bool_t is_safety_on)
 }
 
 
-static CSId_t CSId_flashReadId(void)
+static CCId_t CCId_flashReadId(void)
 {
-    const CSId_flashData_t* flash_data_p = (const CSId_flashData_t*)CS_ID_FLASH_START_ADDR;
-    CSId_flashData_t flash_data;
+    const CCId_flashData_t* flash_data_p = (const CCId_flashData_t*)CS_ID_FLASH_START_ADDR;
+    CCId_flashData_t flash_data;
 
-    memcpy(&flash_data, flash_data_p, sizeof(CSId_flashData_t));
+    memcpy(&flash_data, flash_data_p, sizeof(CCId_flashData_t));
 
-    CSId_flash1_t* flash1 = (CSId_flash1_t*)&flash_data.flash1;
+    CCId_flash1_t* flash1 = (CCId_flash1_t*)&flash_data.flash1;
 
     if(flash1->check_pattern == CS_ID_CHECK_PATTERN)
     {
         if(flash1->checksum == flash1->id)
         {
-            if(flash1->id < CSId_convertId2Num(CSId_UNKNOWN))
+            if(flash1->id < CCId_convertId2Num(CCId_UNKNOWN))
             {
-                return CSId_convertNum2Id(flash1->id);
+                return CCId_convertNum2Id(flash1->id);
             }
             else
             {
@@ -188,7 +188,7 @@ static CSId_t CSId_flashReadId(void)
                 HAL_GPIO_WritePin(LED_TX_GPIO_Port, LED_TX_Pin, GPIO_PIN_SET);
                 HAL_GPIO_WritePin(LED_RX_GPIO_Port, LED_RX_Pin, GPIO_PIN_SET);
                 HAL_Delay(1000);
-                return CSId_UNKNOWN;
+                return CCId_UNKNOWN;
             }
         }
         else
@@ -197,7 +197,7 @@ static CSId_t CSId_flashReadId(void)
             HAL_GPIO_WritePin(LED_TX_GPIO_Port, LED_TX_Pin, GPIO_PIN_SET);
             HAL_GPIO_WritePin(LED_RX_GPIO_Port, LED_RX_Pin, GPIO_PIN_SET);
             HAL_Delay(1000);
-            return CSId_UNKNOWN;
+            return CCId_UNKNOWN;
         }
     }
     else
@@ -206,11 +206,11 @@ static CSId_t CSId_flashReadId(void)
         HAL_GPIO_WritePin(LED_TX_GPIO_Port, LED_TX_Pin, GPIO_PIN_SET);
         HAL_GPIO_WritePin(LED_RX_GPIO_Port, LED_RX_Pin, GPIO_PIN_SET);
         HAL_Delay(1000);
-        return CSId_UNKNOWN;
+        return CCId_UNKNOWN;
     }
 }
 
-static void CSId_flashWriteId(CSId_t id)
+static void CCId_flashWriteId(CCId_t id)
 {
     if(HAL_FLASH_Unlock() != HAL_OK)
     {
@@ -238,10 +238,10 @@ static void CSId_flashWriteId(CSId_t id)
         return;
     }
 
-    CSId_flashData_t flash_data;
-    CSId_flash1_t* flash1 = (CSId_flash1_t*)&flash_data.flash1;
+    CCId_flashData_t flash_data;
+    CCId_flash1_t* flash1 = (CCId_flash1_t*)&flash_data.flash1;
     flash1->check_pattern = CS_ID_CHECK_PATTERN;
-    flash1->id = CSId_convertId2Num(id);
+    flash1->id = CCId_convertId2Num(id);
     flash1->checksum = flash1->id;
 
     if(HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, CS_ID_FLASH_START_ADDR, (uint64_t)flash_data.flash1) != HAL_OK)
@@ -263,7 +263,7 @@ static void CSId_flashWriteId(CSId_t id)
 }
 
 
-static CSType_bool_t CSId_isPushingBtn(void)
+static CCType_bool_t CCId_isPushingBtn(void)
 {
     static uint8_t befor1_state = 0;
     static uint8_t befor2_state = 0;
@@ -273,27 +273,27 @@ static CSType_bool_t CSId_isPushingBtn(void)
         if(befor1_state)
         {
             befor2_state = 1;
-            return CSTYPE_TRUE;
+            return CCTYPE_TRUE;
         }else if(!befor1_state && befor2_state){
             befor2_state = 1;
-            return CSTYPE_TRUE;
+            return CCTYPE_TRUE;
         }else if(!befor1_state && !befor2_state){
             befor1_state = 1;
-            return CSTYPE_FALSE;
+            return CCTYPE_FALSE;
         }
     }else{
         // off
         if(!befor1_state)
         {
             befor2_state = 0;
-            return CSTYPE_FALSE;
+            return CCTYPE_FALSE;
         }else if(befor1_state && !befor2_state){
             befor1_state = 0;
-            return CSTYPE_FALSE;
+            return CCTYPE_FALSE;
         }else if(befor1_state && befor2_state){
             befor1_state = 0;
-            return CSTYPE_TRUE;
+            return CCTYPE_TRUE;
         }
     }
-    return CSTYPE_FALSE;
+    return CCTYPE_FALSE;
 }

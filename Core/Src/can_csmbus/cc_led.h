@@ -1,42 +1,42 @@
 /*
- * cs_led.h
+ * cc_led.h
  *
  *  Created on: Oct 27, 2023
  *      Author: sen
  */
 
-#ifndef SRC_CAN_SMBUS_CS_LED_H_
-#define SRC_CAN_SMBUS_CS_LED_H_
+#ifndef SRC_CAN_CSMBUS_CC_LED_H
+#define SRC_CAN_CSMBUS_CC_LED_H
 
-#include "cs_type.h"
+#include "cc_type.h"
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void CSLed_init(void);
+void CCLed_init(void);
 
 // tx : toggle
-void CSLed_tx(void);
+void CCLed_tx(void);
 
 // rx : toggle
-void CSLed_rx(void);
+void CCLed_rx(void);
 
 // Hang up
 // tx : on, rx : on, er : on
-void CSLed_hungUp(void);
+void CCLed_hungUp(void);
 
 // Other Error
 // tx : blink, rx : blink, er : blink
-void CSLed_err(void);
+void CCLed_err(void);
 
 // Other bus_err
 // tx : blink, rx : blink, er : on
-void CSLed_busErr(void);
+void CCLed_busErr(void);
 
 // Control function
-void CSLed_process(CSType_bool_t is_safety_on);
+void CCLed_process(CCType_bool_t is_safety_on);
 
 #ifdef __cplusplus
 }
@@ -44,4 +44,4 @@ void CSLed_process(CSType_bool_t is_safety_on);
 
 
 
-#endif /* SRC_CAN_SMBUS_CS_LED_H_ */
+#endif /* SRC_CAN_CSMBUS_CC_LED_H */

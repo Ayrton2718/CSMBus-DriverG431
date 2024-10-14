@@ -1,27 +1,27 @@
-#include "cs_timer.h"
+#include "cc_timer.h"
 
 static volatile uint32_t g_ms_count;
 
-static CSTimer_callback_t   g_callback;
+static CCTimer_callback_t   g_callback;
 
-void CSTimer_dummyCallback(void){}
+void CCTimer_dummyCallback(void){}
 
 
-void CSTimer_init(void)
+void CCTimer_init(void)
 {
     g_ms_count = 0;
 
-    g_callback = CSTimer_dummyCallback;
+    g_callback = CCTimer_dummyCallback;
 
     HAL_TIM_Base_Start_IT(CS_TIMER_USE_HTIM);
 }
 
-void CSTimer_bind(CSTimer_callback_t callback)
+void CCTimer_bind(CCTimer_callback_t callback)
 {
     g_callback = callback;
 }
 
-void CSTimer_start(CSTimer_t* tim)
+void CCTimer_start(CCTimer_t* tim)
 {
     uint16_t now_us = __HAL_TIM_GET_COUNTER(CS_TIMER_USE_HTIM);
 	uint32_t now_ms = g_ms_count;
@@ -30,7 +30,7 @@ void CSTimer_start(CSTimer_t* tim)
     tim->us = now_us;
 }
 
-uint32_t CSTimer_getMs(const CSTimer_t tim)
+uint32_t CCTimer_getMs(const CCTimer_t tim)
 {
     uint16_t now_us = __HAL_TIM_GET_COUNTER(CS_TIMER_USE_HTIM);
 	uint32_t now_ms = g_ms_count;
@@ -48,7 +48,7 @@ uint32_t CSTimer_getMs(const CSTimer_t tim)
     return ms;
 }
 
-uint32_t CSTimer_getUs(const CSTimer_t tim)
+uint32_t CCTimer_getUs(const CCTimer_t tim)
 {
     uint16_t now_us = __HAL_TIM_GET_COUNTER(CS_TIMER_USE_HTIM);
     uint32_t now_ms = g_ms_count;
@@ -68,14 +68,14 @@ uint32_t CSTimer_getUs(const CSTimer_t tim)
 }
 
 
-void CSTimer_delayUs(uint32_t us)
+void CCTimer_delayUs(uint32_t us)
 {
-    CSTimer_t start;
-    CSTimer_start(&start);
-    while(CSTimer_getUs(start) < us) {}
+    CCTimer_t start;
+    CCTimer_start(&start);
+    while(CCTimer_getUs(start) < us) {}
 }
 
-void __CSTimer_interrupt(TIM_HandleTypeDef* htim)
+void __CCTimer_interrupt(TIM_HandleTypeDef* htim)
 {
     if(htim->Instance == CS_TIMER_USE_HTIM->Instance)
     {

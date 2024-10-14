@@ -87,11 +87,11 @@ target_link_options(
 
 target_sources(
     ${TARGET_NAME} PRIVATE
-    "Core/Src/can_smbus/cc_id.c"
-    "Core/Src/can_smbus/cc_io.c"
-    "Core/Src/can_smbus/cc_led.c"
-    "Core/Src/can_smbus/cc_timer.c"
-    "Core/Src/can_smbus/cc_type.c"
+    "Core/Src/can_csmbus/cc_id.c"
+    "Core/Src/can_csmbus/cc_io.c"
+    "Core/Src/can_csmbus/cc_led.c"
+    "Core/Src/can_csmbus/cc_timer.c"
+    "Core/Src/can_csmbus/cc_type.c"
     "Core/Src/fdcan.c"
     "Core/Src/gpio.c"
     "Core/Src/main.c"

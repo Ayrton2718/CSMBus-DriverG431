@@ -1,33 +1,33 @@
 #include "user_task.h"
-#include "can_smbus/can_smbus.hpp"
+#include "can_csmbus/can_csmbus.hpp"
 
 extern "C" {
 
 
 }
 
-static CSType_bool_t UserTask_canCallback(CSReg_t reg, const uint8_t* data, size_t len);
+static CCType_bool_t UserTask_canCallback(CCReg_t reg, const uint8_t* data, size_t len);
 static void UserTask_resetCallback(void);
 static void UserTask_timerCallback(void);
 
 static bool g_rst_flg;
-static CSTimer_t g_tim;
+static CCTimer_t g_tim;
 
 void UserTask_setup(void)
 {
     g_rst_flg = false;
     
-    CSTimer_start(&g_tim);
-    CSIo_bind(CSType_appid_UNKNOWN, UserTask_canCallback, UserTask_resetCallback);
-    CSTimer_bind(UserTask_timerCallback);
+    CCTimer_start(&g_tim);
+    CCIo_bind(CCType_appid_UNKNOWN, UserTask_canCallback, UserTask_resetCallback);
+    CCTimer_bind(UserTask_timerCallback);
 }
 
 void UserTask_loop(void)
 {
-    uint32_t us = CSTimer_getUs(g_tim);
+    uint32_t us = CCTimer_getUs(g_tim);
     if(1000 < us)
     {
-        CSTimer_start(&g_tim);
+        CCTimer_start(&g_tim);
     }
 
     if(g_rst_flg)
@@ -45,9 +45,9 @@ static void UserTask_timerCallback(void)
 {
 }
 
-static CSType_bool_t UserTask_canCallback(CSReg_t reg, const uint8_t* data, size_t len)
+static CCType_bool_t UserTask_canCallback(CCReg_t reg, const uint8_t* data, size_t len)
 {
-    return CSTYPE_FALSE;
+    return CCTYPE_FALSE;
 }
 
 static void UserTask_resetCallback(void)

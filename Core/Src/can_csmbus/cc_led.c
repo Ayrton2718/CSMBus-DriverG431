@@ -1,11 +1,11 @@
 /*
- * cs_led.c
+ * cc_led.c
  *
  *  Created on: Oct 27, 2023
  *      Author: sen
  */
 
-#include "cs_led.h"
+#include "cc_led.h"
 
 #include <main.h>
 
@@ -20,7 +20,7 @@ static uint8_t      g_errFlgCount;
 static uint8_t      g_errBlinkInterval;
 
 
-void CSLed_init(void)
+void CCLed_init(void)
 {
     g_isEnableBlink = 1;
     g_tenMsTimer = 0;
@@ -39,20 +39,20 @@ void CSLed_init(void)
     HAL_GPIO_WritePin(LED_ID_GPIO_Port, LED_ID_Pin, GPIO_PIN_RESET);
 }
 
-void CSLed_tx(void)
+void CCLed_tx(void)
 {
     g_txStopCount = 1;
 }
 
 
-void CSLed_rx(void)
+void CCLed_rx(void)
 {
     g_rxStopCount = 1;
 }
 
 
 
-void CSLed_hungUp(void)
+void CCLed_hungUp(void)
 {
     g_isEnableBlink = 0;
     
@@ -64,20 +64,20 @@ void CSLed_hungUp(void)
 }
 
 
-void CSLed_err(void)
+void CCLed_err(void)
 {
     g_errStopCount = 20;
     g_errBlinkInterval = 5;
     HAL_GPIO_WritePin(LED_ERR_GPIO_Port, LED_ERR_Pin, GPIO_PIN_SET);
 }
 
-void CSLed_busErr(void)
+void CCLed_busErr(void)
 {
     g_errStopCount = 10;
 }
 
 
-void CSLed_process(CSType_bool_t is_safety_on)
+void CCLed_process(CCType_bool_t is_safety_on)
 {
     register uint32_t now_tick = HAL_GetTick();
 
